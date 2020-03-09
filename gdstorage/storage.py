@@ -10,7 +10,7 @@ import enum
 import httplib2
 import six
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseUpload
+from googleapiclient.http import MediaIoBaseUpload, MediaIoBaseDownload
 from dateutil.parser import parse
 from django.conf import settings
 from django.core.files import File
@@ -346,11 +346,16 @@ class GoogleDriveStorage(Storage):
 
     def _open(self, name, mode='rb'):
         file_data = self._get_file(name)
-        response, content = self._drive_service._http.request(
+        #response, content = self._drive_service._http.request(
             # file_data['downloadUrl'])
-            file_data['webContentLink'])
-
-        return File(BytesIO(content), name)
+            #file_data['webContentLink'])
+        request = self._drive_service.files().get_media(fileId=file_data['id'])
+        fh = BytesIO()
+        downloader = MediaIoBaseDownload(fh,request)
+        done = False
+        while done is False:
+            status, done = downloader.next_chunk()
+        return File(fh, name)
 
     def _save(self, name, content):
         folder_path = os.path.sep.join(self._split_path(name)[:-1])
