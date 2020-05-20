@@ -36,7 +36,7 @@ else:
     EXTRAS_REQUIRE[":python_version<'3.4'"] = ["enum34 >= 1.1.6"]
 
 setuptools.setup(
-    name="django-googledrive-storage-2",
+    name="django-googledrive-storage",
     version="1.3.6",
     author="Gian Luca Dalla Torre",
     author_email="gianluca.dallatorre@gmail.com",
